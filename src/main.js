@@ -3,7 +3,9 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import Uimini from 'uimini/dist/css/uimini.css'
 
+Vue.use(Uimini)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
