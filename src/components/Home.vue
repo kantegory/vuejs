@@ -35,48 +35,62 @@
             for="radioSerial"
           ) Serial
         .total-time
+
+          // film time
           .total-time__film(
             v-if="whatWatch === 'Film'"
           )
-            span Total Film Times:
+            span.time-title Hours:
+            input.time-input(
+              type="number"
+              v-model="filmHours"
+            )
+            span.time-title Minutes:
+            input.time-input(
+              type="number"
+              v-model="filmMinutes"
+            )
+
+            p.total-time__duration Total time: {{ filmTime }}
+
+          // serial time
           .total-time__serial(
             v-if="whatWatch === 'Serial'"
           )
-            span Total Serial Times:
+            span.time-title How many seasons?
+            input.time-input(
+              type="number"
+              v-model="serialSeasons"
+            )
+            span.time-title How many average series per season?
+            input.time-input(
+              type="number"
+              v-model="serialSeries"
+            )
+            span.time-title Average duration of series (minutes)?
+            input.time-input(
+              type="number"
+              v-model="serialSeriesDuration"
+            )
+
+            p.total-time__duration Total time: {{ serialTime }}
+
           .tag-list
-          .ui-tag__wrapper
-            .ui-tag
-              span.tag-title Tags
-              span.button-close
+            .ui-tag__wrapper(
+              v-for="tag in tags"
+              :key="tag.title"
+            )
+              .ui-tag(
+                @click="addTagUsed(tag)"
+                :class="{active: tag.use}"
+              )
+                span.tag-title {{ tag.title }}
+                span.button-close
         button(
           type="submit"
           class="button--round button button-primary"
           @click="newTask"
         ) Send
-      section
-        .container
-          .task-list
-            .task-item(
-              v-for="task in tasks"
-              :key="task.id"
-              :class="{ completed: task.completed }"
-            )
-              .ui-card.ui-card--shadow
-                .task-item__info
-                  .task-item__main-info
-                    span.ui-label.ui-label--light {{ task.whatWatch }}
-                    span Total Time
-                  span.button-close
-                .task-item__content
-                  .task-item__header
-                    .ui-checkbox-wrapper
-                      input.ui-checkbox(
-                        type='checkbox'
-                        v-model="task.completed"
-                      )
-                    span.ui-title-3 {{ task.title }}
-                  .task-item__body
-                    p.ui-text-regular {{ task.description }}
 </template>
 
 <script>
@@ -87,22 +101,31 @@ export default {
       taskDescription: '',
       whatWatch: '',
       taskId: 3,
-      tasks: [
+
+      // Total time
+      // Film
+      filmHours: 0,
+      filmMinutes: 0,
+
+      // Serial
+      serialSeasons: 0,
+      serialSeries: 0,
+      serialSeriesDuration: 0,
+
+      // Tags
+      tagsUsed: [],
+      tags: [
         {
-          'id': 1,
-          'title': 'El Camino',
-          'description': 'A Breaking Bad Movie (or simply El Camino) is a 2019 American neo-western crime thriller film that serves as an epilogue to the television series Breaking Bad. Series creator Vince Gilligan wrote, directed, and produced the film, while Aaron Paul reprised his role as Jesse Pinkman.',
-          'whatWatch': 'Film',
-          'completed': false,
-          'editing': false
+          title: 'Comedy',
+          use: false
         },
         {
-          'id': 2,
-          'title': 'Better Call Saul',
-          'description': 'Set in the early and mid 2000s, Better Call Saul follows the story of con-man turned small-time lawyer, Jimmy McGill (Bob Odenkirk), six years before the events of Breaking Bad, showing his transformation into the persona of criminal-for-hire Saul Goodman.',
-          'whatWatch': 'Serial',
-          'completed': false,
-          'editing': false
+          title: 'Western',
+          use: false
+        },
+        {
+          title: 'Adventure',
+          use: false
         }
       ]
     }
@@ -112,18 +135,55 @@ export default {
       if (this.taskTitle === '') {
         return
       }
-      this.tasks.push({
+      let time = this.whatWatch === 'Film' ? this.filmTime : this.serialTime
+      const tasks = {
         id: this.taskId,
         title: this.taskTitle,
         description: this.taskDescription,
         whatWatch: this.whatWatch,
+        time: time,
         completed: false,
         editing: false
-      })
+      }
+
+      console.log(tasks)
       // Reset
       this.taskId += 1
       this.taskTitle = ''
       this.taskDescription = ''
+    },
+    getDuration (minutes) {
+      if (minutes >= 0) {
+        console.log('it works')
+        let hours = ~~(minutes / 60)
+        let min = minutes % 60
+        return hours + ' Hours ' + min + ' Minutes'
+      }
+    },
+    addTagUsed (tag) {
+      tag.use = !tag.use
+
+      if (tag.use) {
+        this.tagsUsed.push(tag.title)
+      } else {
+        this.tagsUsed.splice(tag.title)
+      }
+    }
+  },
+  computed: {
+    filmTime () {
+      let hours = this.filmHours !== '' ? parseInt(this.filmHours, 10) : 0
+      let minutes = this.filmMinutes !== '' ? parseInt(this.filmMinutes, 10) : 0
+      let min = hours * 60 + minutes
+
+      return this.getDuration(min)
+    },
+    serialTime () {
+      let serialSeasons = this.serialSeasons !== '' ? parseInt(this.serialSeasons, 10) : 0
+      let serialSeries = this.serialSeries !== '' ? parseInt(this.serialSeries, 10) : 0
+      let serialSeriesDuration = this.serialSeriesDuration !== '' ? parseInt(this.serialSeriesDuration, 10) : 0
+      let min = serialSeasons * serialSeries * serialSeriesDuration
+      return this.getDuration(min)
     }
   }
 }
@@ -142,26 +202,24 @@ export default {
       margin-right 0
 button
   margin-top 18px
-.task-item
+// total time
+.total-time
   margin-bottom 20px
-  &:last-chilg
-    margin-bottom 0
-.ui-label
-  margin-right 8px
-.task-item__info
-  display flex
-  align-items center
-  justify-content space-between
+.time-title
+  display block
+  margin-bottom 6px
+.time-input
+  max-width 80px
+  margin-right 10px
+.total-time__duration
   margin-bottom 20px
-  .button-close
-    width 20px
-    height @width
-.task-item__header
-  display flex
-  align-items center
-  margin-bottom 18px
-  .ui-title-3
-    margin-bottom 0
-  .ui-checkbox-wrapper
-    margin-right 8px
+// tags
+.ui-tag
+  cursor pointer
+  margin-right 6px
+.ui-tag.active
+  background #444ce0
+  color #fff
+  span.button-close
+    color #fff
 </style>
