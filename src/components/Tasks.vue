@@ -1,8 +1,19 @@
 <template lang="pug">
   .content-wrapper
-    section
-      .container
+    .container
+      .task-list__header
         h1.ui-title-1 Tasks
+        .buttons-list
+          button.button--round.button-default(
+            @click="filter = 'active'"
+          ) Active
+          button.button--round.button-default(
+            @click="filter = 'completed'"
+          ) Completed
+          button.button--round.button-default(
+            @click="filter = 'all'"
+           ) All
+
       .task-list
         .task-item(
           v-for="task in tasks"
@@ -13,7 +24,7 @@
             .task-item__info
               .task-item__main-info
                 span.ui-label.ui-label--light {{ task.whatWatch }}
-                span Total Time
+                span Total Time: {{ task.time }}
               span.button-close
             .task-item__content
               .task-item__header
@@ -25,40 +36,65 @@
                 span.ui-title-3 {{ task.title }}
               .task-item__body
                 p.ui-text-regular {{ task.description }}
+              .task-item__footer
+                .tag-list
+                  .ui-tag__wrapper(
+                    v-for="tag in task.tags"
+                    :key="tag"
+                  )
+                    .ui-tag
+                      span.tag-title {{ tag }}
 </template>
 
 <script>
 export default {
   data () {
     return {
-      tasks: [
-        {
-          'id': 1,
-          'title': 'El Camino',
-          'description': 'A Breaking Bad Movie (or simply El Camino) is a 2019 American neo-western crime thriller film that serves as an epilogue to the television series Breaking Bad. Series creator Vince Gilligan wrote, directed, and produced the film, while Aaron Paul reprised his role as Jesse Pinkman.',
-          'whatWatch': 'Film',
-          'completed': false,
-          'editing': false
-        },
-        {
-          'id': 2,
-          'title': 'Better Call Saul',
-          'description': 'Set in the early and mid 2000s, Better Call Saul follows the story of con-man turned small-time lawyer, Jimmy McGill (Bob Odenkirk), six years before the events of Breaking Bad, showing his transformation into the persona of criminal-for-hire Saul Goodman.',
-          'whatWatch': 'Serial',
-          'completed': false,
-          'editing': false
-        }
-      ]
+      filter: 'active'
+    }
+  },
+  computed: {
+    tasks () {
+      if (this.filter === 'all') {
+        return this.$store.getters.tasks
+      } else if (this.filter === 'active') {
+        return this.$store.getters.tasksActive
+      } else if (this.filter === 'completed') {
+        return this.$store.getters.tasksCompleted
+      }
+      return this.filter === 'active'
     }
   }
 }
 </script>
 
 <style lang="stylus" scoped>
+.task-list__header
+  display flex
+  justify-content space-between
+  align-items center
+  margin-top 30px
+  margin-bottom 30px
+  button
+    margin-right 6px
+    &:last-child
+      margin-right 0
+  .ui-title-1
+    margin-bottom 0
+
 .task-item
   margin-bottom 20px
-  &:last-chilg
+  &:last-child
     margin-bottom 0
+  .ui-checkbox:checked:before
+    border-color #909399
+  &.completed
+    .ui-title-3,
+    .ui-text-regular,
+    .ui-tag
+      text-decoration line-through
+      color #909399
+
 .ui-label
   margin-right 8px
 .task-item__info
@@ -77,4 +113,6 @@ export default {
     margin-bottom 0
   .ui-checkbox-wrapper
     margin-right 8px
+.task-item__footer
+  margin-top 20px
 </style>

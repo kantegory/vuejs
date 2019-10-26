@@ -75,6 +75,31 @@
 
             p.total-time__duration Total time: {{ serialTime }}
 
+          // Tag list
+          // Add new tag
+          .tag-list.tag-list--add
+            .ui-tag__wrapper(
+              @click="tagMenuShow = !tagMenuShow"
+            )
+              .ui-tag
+                span.tag-title Add New
+                span.button-close(
+                  :class="{ active: tagMenuShow }"
+                )
+
+          // show add tag
+          .tag-list.tag-list--menu(
+            v-if="tagMenuShow"
+          )
+            input.tag-add--input(
+              type="text"
+              placeholder="New tag"
+              v-model="tagTitle"
+              @keyup.enter="newTag"
+              @keyup.space="newTag"
+            )
+
+          // all tags
           .tag-list
             .ui-tag__wrapper(
               v-for="tag in tags"
@@ -114,20 +139,8 @@ export default {
 
       // Tags
       tagsUsed: [],
-      tags: [
-        {
-          title: 'Comedy',
-          use: false
-        },
-        {
-          title: 'Western',
-          use: false
-        },
-        {
-          title: 'Adventure',
-          use: false
-        }
-      ]
+      tagMenuShow: false,
+      tagTitle: ''
     }
   },
   methods: {
@@ -136,25 +149,25 @@ export default {
         return
       }
       let time = this.whatWatch === 'Film' ? this.filmTime : this.serialTime
-      const tasks = {
+      const task = {
         id: this.taskId,
         title: this.taskTitle,
         description: this.taskDescription,
         whatWatch: this.whatWatch,
         time: time,
         completed: false,
-        editing: false
+        editing: false,
+        tags: this.tagsUsed
       }
 
-      console.log(tasks)
+      this.$store.dispatch('newTask', task)
+
+      console.log(task)
       // Reset
-      this.taskId += 1
-      this.taskTitle = ''
-      this.taskDescription = ''
+      this.resetAll()
     },
     getDuration (minutes) {
       if (minutes >= 0) {
-        console.log('it works')
         let hours = ~~(minutes / 60)
         let min = minutes % 60
         return hours + ' Hours ' + min + ' Minutes'
@@ -168,9 +181,34 @@ export default {
       } else {
         this.tagsUsed.splice(tag.title)
       }
+    },
+    newTag () {
+      const tag = {
+        'title': this.tagTitle,
+        'use': false
+      }
+      this.$store.dispatch('newTag', tag)
+      this.tagTitle = ''
+    },
+    resetAll () {
+      this.taskId += 1
+      this.taskTitle = ''
+      this.taskDescription = ''
+      this.tagsUsed = []
+      this.whatWatch = ''
+      this.filmHours = 0
+      this.filmMinutes = 0
+      this.serialSeries = 0
+      this.serialSeasons = 0
+      this.serialSeriesDuration = 0
+      this.tags.map((tag) => { tag.use = false })
+      this.tagMenuShow = false
     }
   },
   computed: {
+    tags () {
+      return this.$store.getters.tags
+    },
     filmTime () {
       let hours = this.filmHours !== '' ? parseInt(this.filmHours, 10) : 0
       let minutes = this.filmMinutes !== '' ? parseInt(this.filmMinutes, 10) : 0
@@ -217,9 +255,23 @@ button
 .ui-tag
   cursor pointer
   margin-right 6px
+
 .ui-tag.active
   background #444ce0
   color #fff
-  span.button-close
+  .button-close
     color #fff
+
+.tag-list
+  margin-top: 20px
+
+.tag-list--add
+
+  .button-close
+    transform rotate(45deg)
+  .button-close.active
+    transform rotate(90deg)
+
+.tag-add--input
+  max-width 150px
 </style>
