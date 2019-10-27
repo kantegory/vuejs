@@ -46,4 +46,6 @@ export default {
 </script>
 
 <style lang="stylus">
+body
+  // background #f7f7f7
 </style>

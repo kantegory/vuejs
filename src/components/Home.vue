@@ -111,11 +111,12 @@
               )
                 span.tag-title {{ tag.title }}
                 span.button-close
-        button(
-          type="submit"
-          class="button--round button button-primary"
-          @click="newTask"
-        ) Send
+        .buttons-list
+          button(
+            type="submit"
+            class="button--round button button-primary"
+            @click="newTask"
+          ) Send
 </template>
 
 <script>
@@ -238,8 +239,9 @@ export default {
     margin-right 20px
     &:last-child
       margin-right 0
-button
+.buttons-list
   margin-top 18px
+  text-align right
 // total time
 .total-time
   margin-bottom 20px
