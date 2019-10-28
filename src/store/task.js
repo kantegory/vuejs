@@ -24,13 +24,13 @@ export default {
     ]
   },
   mutations: {
-    newTask (state, payLoad) {
-      state.tasks.push(payLoad)
+    newTask (state, payload) {
+      state.tasks.push(payload)
     }
   },
   actions: {
-    newTask ({commit}, payLoad) {
-      commit('newTask', payLoad)
+    newTask ({commit}, payload) {
+      commit('newTask', payload)
     }
   },
   getters: {

@@ -6,7 +6,7 @@
           .auth__banner
             h1.ui-title-2 Hello banner
           .auth__form
-            span.ui-title-2 Registration form
+            span.ui-title-2 Registration
             form(@submit.prevent="onSubmit")
               .form-item(
                 :class="{'form-group--error': $v.email.$error}"
@@ -25,19 +25,19 @@
                   v-if="!$v.email.email"
                 ) Email is incorrect
 
-              .form-item(
-                :class="{'form-group--error': $v.nickname.$error}"
-              )
-                input(
-                  type="text"
-                  placeholder="Nickname..."
-                  v-model="nickname"
-                  :class="{'input--error': $v.nickname.$error}"
-                  @change="$v.nickname.$touch"
-                )
-                .error(
-                  v-if="!$v.nickname.required"
-                ) Field is required
+              //- .form-item(
+              //-   :class="{'form-group--error': $v.nickname.$error}"
+              //- )
+              //-   input(
+              //-     type="text"
+              //-     placeholder="Nickname..."
+              //-     v-model="nickname"
+              //-     :class="{'input--error': $v.nickname.$error}"
+              //-     @change="$v.nickname.$touch"
+              //-   )
+              //-   .error(
+              //-     v-if="!$v.nickname.required"
+              //-   ) Field is required
 
               .form-item(
                 :class="{'form-group--error': $v.password.$error}"
@@ -75,12 +75,15 @@
                   type="submit"
                   :disabled="submitStatus === 'PENDING'"
                   :class="{'button--disable': submitStatus === 'PENDING'}"
-                ) Registration
+                )
+                  span(v-if="loading") Loading...
+                  span(v-else) Registration
 
               .registration--status
                 p.typo__p(v-if="submitStatus === 'OK'") Thanks for registration!
                 p.typo__p(v-if="submitStatus === 'ERROR'") Please fill the form correctly.
                 p.typo__p(v-if="submitStatus === 'PENDING'") Sending...
+                p.typo__p(v-else) {{ submitStatus }}
 
               .auth__form--footer
                 span Do you have an account?
@@ -95,7 +98,7 @@ export default {
       email: '',
       password: '',
       repeatPassword: '',
-      nickname: '',
+      // nickname: '',
       submitStatus: null
     }
   },
@@ -123,15 +126,26 @@ export default {
       } else {
         const user = {
           email: this.email,
-          password: this.password,
-          nickname: this.nickname
+          password: this.password
+          // nickname: this.nickname
         }
         console.log(user)
         this.submitStatus = 'PENDING'
-        setTimeout(() => {
-          this.submitStatus = 'OK'
-        }, 500)
+        this.$store.dispatch('registerUser', user)
+          .then(() => {
+            console.log('REGISTER!')
+            this.submitStatus = 'OK'
+            this.$router.push('/')
+          })
+          .catch(err => {
+            this.submitStatus = err.message
+          })
       }
+    }
+  },
+  computed: {
+    loading () {
+      return this.$store.getters.loading
     }
   }
 }
@@ -140,6 +154,7 @@ export default {
 <style lang="stylus" scoped>
 .auth
   display flex
+  flex-wrap wrap
 .auth__banner,
 .auth__form
   width 50%

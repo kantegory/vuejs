@@ -6,7 +6,7 @@
           .auth__banner
             h1.ui-title-2 Hello banner
           .auth__form
-            span.ui-title-2 Logn form
+            span.ui-title-2 Login
             form(@submit.prevent="onSubmit")
               .form-item(
                 :class="{'form-group--error': $v.email.$error}"
@@ -47,12 +47,15 @@
                   type="submit"
                   :disabled="submitStatus === 'PENDING'"
                   :class="{'button--disable': submitStatus === 'PENDING'}"
-                ) Login
+                )
+                  span(v-if="loading") Loading...
+                  span(v-else) Login
 
               .login--status
                 p.typo__p(v-if="submitStatus === 'OK'") Thanks for login!
                 p.typo__p(v-if="submitStatus === 'ERROR'") Please fill the form correctly.
                 p.typo__p(v-if="submitStatus === 'PENDING'") Sending...
+                p.typo__p(v-else) {{ submitStatus }}
 
               .auth__form--footer
                 span Need registration?
@@ -91,10 +94,21 @@ export default {
         }
         console.log(user)
         this.submitStatus = 'PENDING'
-        setTimeout(() => {
-          this.submitStatus = 'OK'
-        }, 500)
+        this.$store.dispatch('loginUser', user)
+          .then(() => {
+            console.log('Login!')
+            this.submitStatus = 'OK'
+            this.$router.push('/')
+          })
+          .catch(err => {
+            this.submitStatus = err.message
+          })
       }
+    }
+  },
+  computed: {
+    loading () {
+      return this.$store.getters.loading
     }
   }
 }
