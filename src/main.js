@@ -40,6 +40,9 @@ new Vue({
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig)
 
+    // Get a reference to the database service
+    var database = firebase.database();
+
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.$store.dispatch('loggedUser', user)

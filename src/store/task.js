@@ -1,3 +1,5 @@
+import firebase from 'firebase/app'
+
 export default {
   state: {
     tasks: [
@@ -31,6 +33,20 @@ export default {
   actions: {
     newTask ({commit}, payload) {
       commit('newTask', payload)
+    },
+    writeTaskData (task) {
+      firebase.database().ref('tasks' + task.id).set({
+        'title', task.title,
+        'description': task.description,
+        'whatWatch': task.whatWatch,
+        'completed': task.completed,
+        'editing': task.editing,
+        'tags': task.tags,
+        'time': task.time
+      })
+    },
+    updateTaskData (task) {
+      return firebase.database.ref().update(task)
     }
   },
   getters: {
