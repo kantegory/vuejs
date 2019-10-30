@@ -31,12 +31,18 @@ export default new Router({
     {
       path: '/registration',
       name: 'Registration',
-      component: Registration
+      component: Registration,
+      beforeEnter (to, from, next) {
+        store.getters.checkUser ? next('/home') : next()
+      }
     },
     {
       path: '/login',
       name: 'Login',
-      component: Login
+      component: Login,
+      beforeEnter (to, from, next) {
+        store.getters.checkUser ? next('/home') : next()
+      }
     }
   ]
 })

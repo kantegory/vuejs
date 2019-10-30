@@ -41,7 +41,7 @@ new Vue({
     firebase.initializeApp(firebaseConfig)
 
     // Get a reference to the database service
-    var database = firebase.database();
+    // var database = firebase.database()
 
     firebase.auth().onAuthStateChanged(user => {
       if (user) {

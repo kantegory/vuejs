@@ -1,5 +1,7 @@
 import firebase from 'firebase/app'
 
+import Task from './task_help'
+
 export default {
   state: {
     tasks: [
@@ -31,12 +33,36 @@ export default {
     }
   },
   actions: {
-    newTask ({commit}, payload) {
-      commit('newTask', payload)
+    async newTask ({commit, getters}, payload) {
+      commit('clearError')
+      commit('setLoading', true)
+      try {
+        // logic
+        const newTask = new Task (
+          payload.title,
+          payload.description,
+          payload.whatWatch,
+          payload.time,
+          payload.tags,
+          payload.completed,
+          payload.editing,
+          getters.user.id
+        )
+
+        const task = await firebase.database().ref('tasks').push(newTask)
+        commit('setLoading', false)
+      } catch (error) {
+        commit('setLoading', false)
+        commit('setError', error.message)
+        throw error
+      }
     },
+    // newTask ({commit}, payload) {
+    //   commit('newTask', payload)
+    // },
     writeTaskData (task) {
       firebase.database().ref('tasks' + task.id).set({
-        'title', task.title,
+        'title': task.title,
         'description': task.description,
         'whatWatch': task.whatWatch,
         'completed': task.completed,
