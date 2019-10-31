@@ -40,15 +40,21 @@
           .total-time__film(
             v-if="whatWatch === 'Film'"
           )
-            span.time-title Hours:
+            label.time-title(
+              for="filmHours"
+            ) Hours:
             input.time-input(
               type="number"
               v-model="filmHours"
+              id="filmHours"
             )
-            span.time-title Minutes:
+            label.time-title(
+              for="filmHours"
+            ) Minutes:
             input.time-input(
               type="number"
               v-model="filmMinutes"
+              id="filmMinutes"
             )
 
             p.total-time__duration Total time: {{ filmTime }}
@@ -57,20 +63,29 @@
           .total-time__serial(
             v-if="whatWatch === 'Serial'"
           )
-            span.time-title How many seasons?
+            label.time-title(
+              for="serialSeasons"
+            ) How many seasons?
             input.time-input(
               type="number"
               v-model="serialSeasons"
+              id="serialSeasons"
             )
-            span.time-title How many average series per season?
+            label.time-title(
+              for="serialSeries"
+            ) How many average series per season?
             input.time-input(
               type="number"
               v-model="serialSeries"
+              id="serialSeries"
             )
-            span.time-title Average duration of series (minutes)?
+            label.time-title(
+              for="serialSeriesDuration"
+            ) Average duration of series (minutes)?
             input.time-input(
               type="number"
               v-model="serialSeriesDuration"
+              id="serialSeriesDuration"
             )
 
             p.total-time__duration Total time: {{ serialTime }}

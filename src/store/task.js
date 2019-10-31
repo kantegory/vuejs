@@ -38,7 +38,7 @@ export default {
       commit('setLoading', true)
       try {
         // logic
-        const newTask = new Task (
+        const newTask = new Task(
           payload.title,
           payload.description,
           payload.whatWatch,
@@ -49,8 +49,11 @@ export default {
           getters.user.id
         )
 
+        console.log(getters.user)
+
         const task = await firebase.database().ref('tasks').push(newTask)
         commit('setLoading', false)
+        commit('newTask', task)
       } catch (error) {
         commit('setLoading', false)
         commit('setError', error.message)
@@ -88,6 +91,10 @@ export default {
       return state.tasks.filter((task) => {
         return task.completed === false
       })
+    },
+    tasksByUserId ({getters}) {
+      const user = getters.user.__ob__.dep.id
+
     }
   }
 }

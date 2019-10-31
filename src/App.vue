@@ -30,7 +30,9 @@
                     v-if="checkUser"
                     @click="logout"
                   )
-                    span.navbar-link Logout
+                    span.navbar-link(
+                      role="link"
+                    ) Logout
     router-view
 </template>
 

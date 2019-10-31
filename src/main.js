@@ -45,6 +45,7 @@ new Vue({
 
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
+        console.log('imhere', user.uid)
         this.$store.dispatch('loggedUser', user)
       }
     })

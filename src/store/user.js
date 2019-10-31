@@ -8,6 +8,7 @@ export default {
   },
   mutations: {
     setUser (state, payload) {
+      console.log(payload)
       state.user = payload
     }
   },
@@ -44,6 +45,7 @@ export default {
       }
     },
     loggedUser ({commit}, payload) {
+      console.log(payload.uid)
       commit('setUser', new User(payload.uid))
     },
     logoutUser ({commit}) {
@@ -53,6 +55,7 @@ export default {
   },
   getters: {
     user (state) {
+      console.log('this is state', state)
       return state.user
     },
     checkUser (state) {
