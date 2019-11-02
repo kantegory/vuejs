@@ -56,8 +56,10 @@ def add_tag(data):
 
 def user_auth(data):
     s = session()
+    
     rows = s.query(Users).filter(Users.email == data["email"] and Users.password == data["password"]).all()
     auth = True if rows else False
+
     return auth
 
 
@@ -100,4 +102,18 @@ def select_tags():
 
 
 def update_task(data):
-    pass
+    s = session()
+
+    s.query(Tasks).filter(Task.id == data["id"]).update(
+        {
+            "title": data["title"],
+            "description": data["description"],
+            "whatWatch": data["whatWatch"],
+            "time": data["time"],
+            "completed": data["completed"],
+            "editing": data["editing"],
+            "tags": data["tags"]
+        }
+    )
+
+    s.commit()
