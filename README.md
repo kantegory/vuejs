@@ -1,6 +1,6 @@
 # vue-film-library
 
-> A Vue.js project
+> My first project written in Vue.JS + Firebase as first version. This is a simple web application, like classical todo-list, but mostly about films and serials.
 
 ## Build Setup
 
